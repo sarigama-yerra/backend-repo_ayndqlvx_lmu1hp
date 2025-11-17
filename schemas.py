@@ -12,37 +12,33 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Literal
 
-# Example schemas (replace with your own):
+# Core app schemas
 
-class User(BaseModel):
-    """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
-    """
-    name: str = Field(..., description="Full name")
+class AppUser(BaseModel):
+    """Users collection schema (collection name: "appuser")"""
+    username: str = Field(..., description="Unique username")
     email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+    avatar_url: Optional[str] = Field(None, description="Profile image URL")
 
-class Product(BaseModel):
-    """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
-    """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
+class Video(BaseModel):
+    """Videos collection schema (collection name: "video")"""
+    title: str = Field(..., description="Video title")
+    url: str = Field(..., description="Public video URL (mp4, YouTube, etc.)")
+    description: Optional[str] = Field(None, description="Short description")
+    uploader_id: str = Field(..., description="ID of user who uploaded")
+    thumbnail_url: Optional[str] = Field(None, description="Thumbnail URL")
 
-# Add your own schemas here:
-# --------------------------------------------------
+class Friend(BaseModel):
+    """Friend relationships (collection name: "friend")"""
+    user_a: str = Field(..., description="First user id")
+    user_b: str = Field(..., description="Second user id")
+    status: Literal["pending", "accepted", "rejected"] = Field("pending")
+    requester: str = Field(..., description="User id who initiated the request")
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Message(BaseModel):
+    """Direct messages between two users (collection name: "message")"""
+    sender_id: str
+    receiver_id: str
+    content: str
